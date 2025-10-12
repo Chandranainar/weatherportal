@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Weather - Tamil Nadu</title>
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    
+    <style>
+        .compare-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .compare-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 25px;
+            height: 400px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.45);
+        }
+        
+        .district-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .district-select option {
+            background: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">TN Weather</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="compare.html">Compare</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        <div class="glass-card">
+            <h1 class="text-center mb-4">Compare District Weather</h1>
+            
+            <!-- District Selection -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <select class="district-select" id="district1">
+                        <option value="">Select First District</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <select class="district-select" id="district2">
+                        <option value="">Select Second District</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Weather Comparison -->
+            <div class="compare-container" id="comparison">
+                <div class="glass-card">
+                    <div class="weather-info" id="weather1">
+                        <p>Select a district to see weather information</p>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="weather-info" id="weather2">
+                        <p>Select a district to see weather information</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather Parameters Comparison -->
+        <div class="glass-card mt-4">
+            <div class="comparison-tabs mb-4">
+                <ul class="nav nav-pills justify-content-center" id="comparison-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#temperature-tab" type="button">
+                            <i class="fas fa-temperature-high"></i> Temperature
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#wind-tab" type="button">
+                            <i class="fas fa-wind"></i> Wind
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#humidity-tab" type="button">
+                            <i class="fas fa-tint"></i> Humidity
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#rain-tab" type="button">
+                            <i class="fas fa-cloud-rain"></i> Rainfall
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="tab-content" id="comparison-content">
+                <div class="tab-pane fade show active" id="temperature-tab">
+                    <h3 class="text-center mb-3">Temperature Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="temperature-chart"></canvas>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="wind-tab">
+                    <h3 class="text-center mb-3">Wind Speed & Direction Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="wind-chart"></canvas>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="humidity-tab">
+                    <h3 class="text-center mb-3">Humidity Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="humidity-chart"></canvas>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="rain-tab">
+                    <h3 class="text-center mb-3">Rainfall Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="rain-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .comparison-tabs .nav-pills {
+                gap: 10px;
+                padding: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50px;
+                display: inline-flex;
+            }
+
+            .comparison-tabs .nav-link {
+                color: rgba(255, 255, 255, 0.7);
+                border-radius: 25px;
+                padding: 10px 20px;
+                transition: all 0.3s ease;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .comparison-tabs .nav-link i {
+                font-size: 1.1em;
+            }
+
+            .comparison-tabs .nav-link:hover {
+                color: white;
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .comparison-tabs .nav-link.active {
+                background: linear-gradient(135deg, #4ECDC4, #2ECC71);
+                color: white;
+                box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            }
+
+            .tab-content {
+                padding: 20px 0;
+            }
+
+            .tab-pane {
+                opacity: 0;
+                transform: translateY(10px);
+                transition: all 0.3s ease;
+            }
+
+            .tab-pane.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            @media (max-width: 768px) {
+                .comparison-tabs .nav-pills {
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    border-radius: 15px;
+                }
+
+                .comparison-tabs .nav-link {
+                    width: calc(50% - 10px);
+                    justify-content: center;
+                }
+            }
+        </style>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/districts.js"></script>
+    <script>
+        // Populate district dropdowns
+        const district1Select = document.getElementById('district1');
+        const district2Select = document.getElementById('district2');
+        
+        Object.keys(districts).sort().forEach(district => {
+            district1Select.innerHTML += `<option value="${district}">${district}</option>`;
+            district2Select.innerHTML += `<option value="${district}">${district}</option>`;
+        });
+
+        let charts = {
+            temperature: null,
+            wind: null,
+            humidity: null,
+            rain: null
+        };
+
+        // Update weather info when districts are selected
+        async function updateComparison() {
+            const district1 = district1Select.value;
+            const district2 = district2Select.value;
+
+            if (district1) {
+                const coords1 = getDistrictCoordinates(district1);
+                const data1 = await getWeatherData(coords1[0], coords1[1]);
+                if (data1) {
+                    document.getElementById('weather1').innerHTML = `
+                        <h3>${district1}</h3>
+                        <img src="${getWeatherIcon(data1.weather[0].icon)}" alt="${data1.weather[0].description}" class="weather-icon mb-3">
+                        <div class="temperature">${Math.round(data1.main.temp)}°C</div>
+                        <div class="weather-details">
+                            <div class="weather-item">
+                                <i class="fas fa-cloud"></i>
+                                ${data1.weather[0].main}
+                            </div>
+                            <div class="weather-item">
+                                <i class="fas fa-tint"></i>
+                                ${data1.main.humidity}%
+                            </div>
+                            <div class="weather-item">
+                                <i class="fas fa-wind"></i>
+                                ${data1.wind.speed} m/s
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            if (district2) {
+                const coords2 = getDistrictCoordinates(district2);
+                const data2 = await getWeatherData(coords2[0], coords2[1]);
+                if (data2) {
+                    document.getElementById('weather2').innerHTML = `
+                        <h3>${district2}</h3>
+                        <img src="${getWeatherIcon(data2.weather[0].icon)}" alt="${data2.weather[0].description}" class="weather-icon mb-3">
+                        <div class="temperature">${Math.round(data2.main.temp)}°C</div>
+                        <div class="weather-details">
+                            <div class="weather-item">
+                                <i class="fas fa-cloud"></i>
+                                ${data2.weather[0].main}
+                            </div>
+                            <div class="weather-item">
+                                <i class="fas fa-tint"></i>
+                                ${data2.main.humidity}%
+                            </div>
+                            <div class="weather-item">
+                                <i class="fas fa-wind"></i>
+                                ${data2.wind.speed} m/s
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Update comparison chart
+            if (district1 && district2) {
+                const coords1 = getDistrictCoordinates(district1);
+                const coords2 = getDistrictCoordinates(district2);
+                const forecast1 = await getForecastData(coords1[0], coords1[1]);
+                const forecast2 = await getForecastData(coords2[0], coords2[1]);
+
+                if (forecast1 && forecast2) {
+                const dates = forecast1.map(day => {
+                    const date = new Date(day.date);
+                    return date.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                });
+
+                const temps1 = forecast1.map(day => ({
+                    min: Math.round(day.minTemp),
+                    max: Math.round(day.maxTemp)
+                }));
+                const temps2 = forecast2.map(day => ({
+                    min: Math.round(day.minTemp),
+                    max: Math.round(day.maxTemp)
+                }));                    // Destroy existing charts
+                    Object.values(charts).forEach(chart => {
+                        if (chart) chart.destroy();
+                    });
+
+                    // Temperature Chart
+                    charts.temperature = new Chart(document.getElementById('temperature-chart'), {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: [
+                                {
+                                    label: `${district1} (Max)`,
+                                    data: temps1.map(t => t.max),
+                                    borderColor: '#FF6B6B',
+                                    backgroundColor: (context) => {
+                                        const chart = context.chart;
+                                        const {ctx, chartArea} = chart;
+                                        if (!chartArea) return null;
+                                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                                        gradient.addColorStop(0, 'rgba(255, 107, 107, 0)');
+                                        gradient.addColorStop(1, 'rgba(255, 107, 107, 0.3)');
+                                        return gradient;
+                                    },
+                                    fill: true,
+                                    tension: 0.4,
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#FF6B6B',
+                                    pointBorderColor: 'rgba(255, 255, 255, 0.8)',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                },
+                                {
+                                    label: `${district1} (Min)`,
+                                    data: temps1.map(t => t.min),
+                                    borderColor: '#FF9B9B',
+                                    backgroundColor: (context) => {
+                                        const chart = context.chart;
+                                        const {ctx, chartArea} = chart;
+                                        if (!chartArea) return null;
+                                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                                        gradient.addColorStop(0, 'rgba(255, 155, 155, 0)');
+                                        gradient.addColorStop(1, 'rgba(255, 155, 155, 0.3)');
+                                        return gradient;
+                                    },
+                                    fill: true,
+                                    tension: 0.4,
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#FF9B9B',
+                                    pointBorderColor: 'rgba(255, 255, 255, 0.8)',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                },
+                                {
+                                    label: `${district2} (Max)`,
+                                    data: temps2.map(t => t.max),
+                                    borderColor: '#4ECDC4',
+                                    backgroundColor: (context) => {
+                                        const chart = context.chart;
+                                        const {ctx, chartArea} = chart;
+                                        if (!chartArea) return null;
+                                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                                        gradient.addColorStop(0, 'rgba(78, 205, 196, 0)');
+                                        gradient.addColorStop(1, 'rgba(78, 205, 196, 0.3)');
+                                        return gradient;
+                                    },
+                                    fill: true,
+                                    tension: 0.4,
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#4ECDC4',
+                                    pointBorderColor: 'rgba(255, 255, 255, 0.8)',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                },
+                                {
+                                    label: `${district2} (Min)`,
+                                    data: temps2.map(t => t.min),
+                                    borderColor: '#96E6E0',
+                                    backgroundColor: (context) => {
+                                        const chart = context.chart;
+                                        const {ctx, chartArea} = chart;
+                                        if (!chartArea) return null;
+                                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                                        gradient.addColorStop(0, 'rgba(150, 230, 224, 0)');
+                                        gradient.addColorStop(1, 'rgba(150, 230, 224, 0.3)');
+                                        return gradient;
+                                    },
+                                    fill: true,
+                                    tension: 0.4,
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#96E6E0',
+                                    pointBorderColor: 'rgba(255, 255, 255, 0.8)',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: {
+                                duration: 1000,
+                                easing: 'easeInOutQuart'
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: 'nearest',
+                                axis: 'x'
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    align: 'center',
+                                    labels: {
+                                        color: 'white',
+                                        font: {
+                                            family: 'Poppins',
+                                            size: 13,
+                                            weight: '500'
+                                        },
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        filter: function(legendItem, data) {
+                                            return legendItem.text.includes('Max') || legendItem.text.includes('Min');
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleFont: {
+                                        family: 'Poppins',
+                                        size: 13,
+                                        weight: '600'
+                                    },
+                                    bodyFont: {
+                                        family: 'Poppins',
+                                        size: 12
+                                    },
+                                    padding: 12,
+                                    cornerRadius: 8,
+                                    displayColors: true,
+                                    callbacks: {
+                                        title: function(tooltipItems) {
+                                            return tooltipItems[0].label;
+                                        },
+                                        label: function(context) {
+                                            const label = context.dataset.label;
+                                            const value = context.parsed.y;
+                                            return `${label}: ${value}°C`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    grid: {
+                                        color: 'rgba(255, 255, 255, 0.1)',
+                                        drawBorder: false,
+                                        lineWidth: 0.5
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.8)',
+                                        font: {
+                                            family: 'Poppins',
+                                            size: 12
+                                        },
+                                        padding: 10,
+                                        callback: function(value) {
+                                            return value + '°C';
+                                        }
+                                    },
+                                    suggestedMin: function(context) {
+                                        const values = context.chart.data.datasets.flatMap(d => d.data);
+                                        return Math.floor(Math.min(...values) - 2);
+                                    },
+                                    suggestedMax: function(context) {
+                                        const values = context.chart.data.datasets.flatMap(d => d.data);
+                                        return Math.ceil(Math.max(...values) + 2);
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        color: 'rgba(255, 255, 255, 0.8)',
+                                        font: {
+                                            family: 'Poppins',
+                                            size: 12
+                                        },
+                                        padding: 10,
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Wind Chart
+                    charts.wind = new Chart(document.getElementById('wind-chart'), {
+                        type: 'line',
+                        data: {
+                            labels: dates,
+                            datasets: [
+                                {
+                                    label: `${district1} Wind Speed`,
+                                    data: forecast1.map(day => day.windSpeed),
+                                    borderColor: '#FF6B6B',
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#FF6B6B',
+                                    tension: 0.4
+                                },
+                                {
+                                    label: `${district2} Wind Speed`,
+                                    data: forecast2.map(day => day.windSpeed),
+                                    borderColor: '#4ECDC4',
+                                    backgroundColor: 'transparent',
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#4ECDC4',
+                                    tension: 0.4
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: { color: 'white' }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        afterBody: function(context) {
+                                            const idx = context[0].dataIndex;
+                                            const district1Dir = forecast1[idx].windDirectionText;
+                                            const district2Dir = forecast2[idx].windDirectionText;
+                                            return [
+                                                `${district1} Direction: ${district1Dir}`,
+                                                `${district2} Direction: ${district2Dir}`
+                                            ];
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Wind Speed (m/s)',
+                                        color: 'white'
+                                    },
+                                    ticks: { color: 'white' }
+                                },
+                                x: { ticks: { color: 'white' } }
+                            }
+                        }
+                    });
+
+                    // Humidity Chart
+                    charts.humidity = new Chart(document.getElementById('humidity-chart'), {
+                        type: 'bar',
+                        data: {
+                            labels: dates,
+                            datasets: [
+                                {
+                                    label: district1,
+                                    data: forecast1.map(day => day.cloudCover),
+                                    backgroundColor: 'rgba(255, 107, 107, 0.5)',
+                                    borderColor: '#FF6B6B',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: district2,
+                                    data: forecast2.map(day => day.cloudCover),
+                                    backgroundColor: 'rgba(78, 205, 196, 0.5)',
+                                    borderColor: '#4ECDC4',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: 'white' }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Humidity (%)',
+                                        color: 'white'
+                                    },
+                                    ticks: { color: 'white' }
+                                },
+                                x: { ticks: { color: 'white' } }
+                            }
+                        }
+                    });
+
+                    // Rainfall Chart
+                    charts.rain = new Chart(document.getElementById('rain-chart'), {
+                        type: 'bar',
+                        data: {
+                            labels: dates,
+                            datasets: [
+                                {
+                                    label: district1,
+                                    data: forecast1.map(day => day.rainfall || 0),
+                                    backgroundColor: 'rgba(255, 107, 107, 0.5)',
+                                    borderColor: '#FF6B6B',
+                                    borderWidth: 1
+                                },
+                                {
+                                    label: district2,
+                                    data: forecast2.map(day => day.rainfall || 0),
+                                    backgroundColor: 'rgba(78, 205, 196, 0.5)',
+                                    borderColor: '#4ECDC4',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: { color: 'white' }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    title: {
+                                        display: true,
+                                        text: 'Rainfall (mm)',
+                                        color: 'white'
+                                    },
+                                    ticks: { color: 'white' }
+                                },
+                                x: { ticks: { color: 'white' } }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        district1Select.addEventListener('change', updateComparison);
+        district2Select.addEventListener('change', updateComparison);
+    </script>
+</body>
+</html>

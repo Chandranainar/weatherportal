@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Nadu Weather Portal</title>
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/new-style.css" rel="stylesheet">
+    <style>
+    
+        .local-weather {
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            z-index: 1000;
+            width: 300px;
+        }
+        
+        .weather-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .weather-panel:hover {
+            transform: translateX(5px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.45);
+        }
+        
+        @media (max-width: 768px) {
+            .local-weather {
+                top: auto;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                max-width: 350px;
+            }
+        }
+        
+        .custom-marker {
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.95), rgba(47, 128, 237, 0.95));
+            color: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .custom-marker i {
+            color: #FFB75E;
+            font-size: 12px;
+        }
+
+        .custom-marker:hover {
+            transform: scale(1.05) translateY(-2px);
+            background: linear-gradient(135deg, rgba(74, 144, 226, 1), rgba(47, 128, 237, 1));
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .navbar-brand i {
+            margin-right: var(--spacing-sm);
+            color: var(--accent-color);
+        }
+
+        #connection-status .alert {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="cloud-animation">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-cloud-sun"></i>
+                Tamil Nadu Weather Portal
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="compare.html">Compare</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Connection Status -->
+    <div id="connection-status" class="container mt-3" style="display: none;">
+        <div class="alert alert-warning text-center">
+            You are currently offline. Weather data will be loaded from cache.
+        </div>
+    </div>
+
+        <!-- Main Content -->
+    <div class="container my-4">
+        <div class="glass-card fade-in">
+            <div class="d-flex align-items-center mb-4">
+                <i class="fas fa-map-marked-alt me-3" style="font-size: 2rem; color: var(--accent);"></i>
+                <h1 class="mb-0">Tamil Nadu Weather Map</h1>
+            </div>
+            <div id="map" class="fade-in"></div>
+        </div>
+
+        <!-- Current Location Weather -->
+        <div class="local-weather">
+            <div class="glass-card fade-in" id="local-weather">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading your location weather...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Badge -->
+        <div id="connection-status" class="position-fixed top-0 end-0 m-3" style="z-index: 1000;"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/districts.js"></script>
+    <script src="js/weatherCache.js"></script>
+    <script>
+        // Handle online/offline status
+        function updateOnlineStatus() {
+            const statusDiv = document.getElementById('connection-status');
+            if (!navigator.onLine) {
+                statusDiv.style.display = 'block';
+            } else {
+                statusDiv.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus(); // Initial check
+
+        // Initialize map
+        const map = L.map('map').setView([10.7905, 78.7047], 7);
+        
+        // Add OpenStreetMap layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add markers for each district
+        Object.entries(districts).forEach(([district, data]) => {
+            const marker = L.marker(data.coords, {
+                icon: L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div class="custom-marker">
+                            <i class="fas fa-map-marker-alt"></i>
+                            ${district}
+                           </div>`,
+                    iconSize: [120, 30],
+                    iconAnchor: [60, 15]
+                })
+            }).addTo(map);
+
+            marker.on('click', () => {
+                window.location.href = `district.html?name=${encodeURIComponent(district)}`;
+            });
+        });
+
+        // Get current location weather
+        function showLocalWeather(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            getWeatherData(lat, lon).then(data => {
+                if (data) {
+                    const weatherHtml = `
+                        <h4 class="text-center mb-3" style="font-size: 1.1rem;">
+                            <i class="fas fa-location-dot me-2"></i>Your Location
+                            ${data.isOfflineData ? '<span class="badge bg-warning ms-2" style="font-size: 0.7rem;">Offline</span>' : ''}
+                        </h4>
+                        <div class="text-center mb-3">
+                            <img src="${getWeatherIcon(data.weather[0].icon)}" alt="${data.weather[0].description}" class="weather-icon" style="width: 64px; height: 64px;">
+                            <div class="temperature mt-2" style="font-size: 2rem;">${Math.round(data.main.temp)}°C</div>
+                            <div class="weather-condition" style="font-size: 1.1rem; color: rgba(255,255,255,0.9);">${data.weather[0].main}</div>
+                        </div>
+                        <div class="weather-details mt-3">
+                            <div class="weather-info-item d-flex align-items-center mb-2">
+                                <i class="fas fa-tint me-2" style="width: 20px;"></i>
+                                <span>Humidity: ${data.main.humidity}%</span>
+                            </div>
+                            <div class="weather-info-item d-flex align-items-center mb-2">
+                                <i class="fas fa-wind me-2" style="width: 20px;"></i>
+                                <span>Wind: ${data.wind.speed} m/s</span>
+                            </div>
+                        </div>
+                        ${data.lastUpdated ? `
+                        <div class="text-center mt-3" style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">
+                            <i class="fas fa-clock me-1"></i>Updated: ${data.lastUpdated}
+                        </div>
+                        ` : ''}
+                    `;
+                    document.getElementById('local-weather').innerHTML = weatherHtml;
+                }
+            });
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showLocalWeather, 
+                (error) => {
+                    document.getElementById('local-weather').innerHTML = 
+                        '<p class="text-center">Unable to get your location. Please enable location services.</p>';
+                });
+        } else {
+            document.getElementById('local-weather').innerHTML = 
+                '<p class="text-center">Geolocation is not supported by your browser.</p>';
+        }
+  </script>
+</body>
+</html>

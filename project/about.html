@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Tamil Nadu Weather</title>
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    
+    <style>
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tech-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s;
+        }
+        
+        .tech-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .tech-item i {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">TN Weather</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="compare.html">Compare</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="about.html">About</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        <div class="glass-card fade-in">
+            <h1 class="text-center mb-4">About This Project</h1>
+            
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <p class="text-center">
+                        This project provides real-time weather information for all districts in Tamil Nadu,
+                        allowing users to view current conditions, forecasts, and compare weather between districts.
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="text-center mt-5 mb-4">Technologies Used</h2>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <i class="fab fa-html5"></i>
+                    <h4>HTML5</h4>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-css3-alt"></i>
+                    <h4>CSS3</h4>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-js"></i>
+                    <h4>JavaScript</h4>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-bootstrap"></i>
+                    <h4>Bootstrap</h4>
+                </div>
+            </div>
+
+            <h2 class="text-center mt-5 mb-4">APIs & Libraries</h2>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <i class="fas fa-cloud"></i>
+                    <h4>OpenWeather API</h4>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h4>Leaflet.js</h4>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-chart-line"></i>
+                    <h4>Chart.js</h4>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <h2>Created By</h2>
+                <p class="lead">Chandru</p>
+                <p class="mt-4">
+                    <a href="https://github.com/Chandranainar" target="_blank" class="btn btn-light">
+                        <i class="fab fa-github"></i> View on GitHub
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
